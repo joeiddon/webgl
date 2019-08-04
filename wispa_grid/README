@@ -1,0 +1,6 @@
+Because webgl needs to draw images and read their data, it is very strict on cross-origin requests.
+Thus, either run this locally with the --allow-file-access-from-file option for chrome (un-tested), or
+host locally with python -m http.server 8000 or whatever.
+
+See here for more info:
+https://stackoverflow.com/questions/4819060/allow-google-chrome-to-use-xmlhttprequest-to-load-a-url-from-a-local-file
