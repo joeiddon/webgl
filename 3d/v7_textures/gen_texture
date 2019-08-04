@@ -1,0 +1,26 @@
+#! /usr/bin/python3
+
+HELP = '''
+Usage:
+./gen_texture size block_size darkest lightest output_file
+Example:
+./gen_texture 128 8 30 180 texture.png'''
+
+import scipy.misc, sys
+import numpy as np
+
+try:
+    #lc is least color, mc is most color
+    h, s, lc, mc = [int(i) for i in sys.argv[1:-1]]
+    output_file = sys.argv[-1]
+except:
+    print('Invalid arguments.', HELP)
+    sys.exit(1)
+
+i = np.random.randint(lc,mc,(h//s,h//s),'uint8')
+#note: dtype is vital to avoid scaling
+i[0][0] = 255 #for orientation purposes
+
+i = np.repeat(np.repeat(i, s, axis=0), s, axis=1)
+
+scipy.misc.imsave(output_file, i)
