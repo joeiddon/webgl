@@ -135,8 +135,6 @@ function update(){
     things_to_draw = things_to_draw.concat(things_to_draw);
     things_to_draw = things_to_draw.concat(things_to_draw);
 
-    //TODO: pass a matrix into vertex shader which allows a further transform to be applied on object before world u_matrix is applied
-    //also rename world u_matrix to something more appropriate like u_world_transform and this new one could be u_transform
     for (let j = 0; j < things_to_draw.length; j++)
     for (let i = 0; i < things_to_draw.length; i++){
         let thing = things_to_draw[i];
