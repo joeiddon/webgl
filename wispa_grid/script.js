@@ -160,6 +160,8 @@ let yaw = 0;
 let pitch = 0;
 let in_play = false;
 
+update();
+
 //some really hacky code so left click moves forward in facing direction and right click moves backwards
 //you look around with standard pointer lock stuff (click on the screen then move mouse)
 document.addEventListener('pointerlockchange',_=>{if(document.pointerLockElement!=canvas)in_play=false;});
