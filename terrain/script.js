@@ -50,73 +50,85 @@ gl.vertexAttribPointer(a_normal_loc, 3, gl.FLOAT, false, 0, 0);
 
 function gh(x,y) {
     // get height at x,y
-    return perlin.get(x,y); //+ perlin.get(2*x, 2*y) / 2 + perlin.get(5*x, 5*y)/5;
+    return perlin.get(x,y) + perlin.get(4*x, 4*y) / 10;
 }
 
 function calculate_normal(x,y) {
     /* un-normalised - shader can take care of that! */
-    let delta = 0.1;
+    let delta = 0.0001;
     let h = gh(x,y);
-    let hdx = gh(x+delta,y);
-    let hdy = gh(x,y+delta);
-    return misc.cross(
-        misc.sub_vec([x, h, y], [x, hdy, y+delta]),
-        misc.sub_vec([x, h, y], [x+delta, hdx, y]),
+    let c =  misc.cross(
+        misc.sub_vec([x, gh(x,y+delta), y+delta], [x, h, y]),
+        misc.sub_vec([x+delta, gh(x+delta,y), y], [x, h, y]),
     );
+    return [c[1], c[0], c[2]];
 }
 
-function gen_terrain() {
-    let positions = [];
+var chunk_memory = {}
+
+function gen_terrain_chunk(chunk_x, chunk_y) {
+    /* generates a unit chunk translated to chunk_x, chunk_y*/
+    if (chunk_memory.hasOwnProperty([chunk_x, chunk_y]))
+        return chunk_memory[[chunk_x, chunk_y]];
+    let points = [];
     let normals = [];
 
-    let divs = 50;
+    let divs = 10;
     // d is interval / step
-    let d = 2 / divs;
+    let d = 1 / divs;
     for (let xx = 0; xx < divs; xx++){
         for (let yy = 0; yy < divs; yy++){
-            let x = xx / divs * 2 - 1;
-            let y = yy / divs * 2 - 1;
+            let x = xx / divs + chunk_x;
+            let y = yy / divs + chunk_y;
             // remember y and z flipped in 3d
-            positions.push(x, gh(x,y), y);
-            positions.push(x+d, gh(x+d,y), y);
-            positions.push(x+d, gh(x+d,y+d), y+d);
-            positions.push(x, gh(x,y), y);
-            positions.push(x, gh(x,y+d), y+d);
-            positions.push(x+d, gh(x+d,y+d), y+d);
+            points.push([x, gh(x,y), y]);
+            points.push([x+d, gh(x+d,y), y]);
+            points.push([x+d, gh(x+d,y+d), y+d]);
+            points.push([x, gh(x,y), y]);
+            points.push([x, gh(x,y+d), y+d]);
+            points.push([x+d, gh(x+d,y+d), y+d]);
             // use this code for per-triangle normals ...
             //let n1 = misc.cross(
             //    misc.sub_vec([x+d, gh(x+d,y+d), y+d], [x+d, gh(x+d,y), y]),
             //    misc.sub_vec([x+d, gh(x+d,y+d), y+d], [x, gh(x,y), y]),
             //);
-            //normals.push(...n1);
-            //normals.push(...n1);
-            //normals.push(...n1);
+            //normals.push(n1);
+            //normals.push(n1);
+            //normals.push(n1);
             //let n2 = misc.cross(
             //    misc.sub_vec([x+d, gh(x+d,y+d), y+d], [x, gh(x,y), y]),
             //    misc.sub_vec([x+d, gh(x+d,y+d), y+d], [x, gh(x,y+d), y+d]),
             //);
-            //normals.push(...n2);
-            //normals.push(...n2);
-            //normals.push(...n2);
+            //normals.push(n2);
+            //normals.push(n2);
+            //normals.push(n2);
             // per vertex normals ...
-            normals.push(...calculate_normal(x, gh(x,y), y));
-            normals.push(...calculate_normal(x+d, gh(x+d,y), y));
-            normals.push(...calculate_normal(x+d, gh(x,y+d), y+d));
-            normals.push(...calculate_normal(x, gh(x,y), y));
-            normals.push(...calculate_normal(x, gh(x,y+d), y+d));
-            normals.push(...calculate_normal(x+d, gh(x,y+d), y+d));
+            normals.push(calculate_normal(x, y));
+            normals.push(calculate_normal(x+d, y));
+            normals.push(calculate_normal(x+d, y+d));
+            normals.push(calculate_normal(x, y));
+            normals.push(calculate_normal(x, y+d));
+            normals.push(calculate_normal(x+d, y+d));
         }
     }
-    return {'positions': positions, 'normals': normals};
+    let chunk = {'points': points, 'normals': normals};
+    chunk_memory[[chunk_x, chunk_y]] = chunk;
+    return chunk;
 }
+
 
 function populate_buffers() {
     let positions = [];
     let normals = [];
 
-    let terrain = gen_terrain();
-    positions.push(...terrain['positions']);
-    normals.push(...terrain['normals']);
+    // generate each chunk and translate to correct position
+    for (let x = -4; x < 4; x ++){
+        for (let y = -5; y < 5; y ++){
+            let chunk = gen_terrain_chunk(x,y);
+            positions.push(...chunk['points'].flat());
+            normals.push(...chunk['normals'].flat());
+        }
+    }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positions_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
