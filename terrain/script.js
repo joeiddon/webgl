@@ -34,6 +34,7 @@ gl.clearColor(0.8, 0.8, 0.8, 1);
 let a_position_loc = gl.getAttribLocation(program, 'a_position');
 let a_normal_loc = gl.getAttribLocation(program, 'a_normal');
 let u_world_matrix_loc = gl.getUniformLocation(program, 'u_world_matrix');
+let u_rot_matrix_loc = gl.getUniformLocation(program, 'u_rot_matrix');
 let u_view_matrix_loc = gl.getUniformLocation(program, 'u_view_matrix');
 let u_light_loc = gl.getUniformLocation(program, 'u_light');
 let a_texcoord_loc = gl.getAttribLocation(program, 'a_texcoord');
@@ -228,7 +229,8 @@ function set_u_matrix(){
     //maps 3d to 2d
     let m_world = m4.multiply(m_perspective, m_view);
     gl.uniformMatrix4fv(u_world_matrix_loc, false, m4.gl_format(m_world));
-    gl.uniformMatrix4fv(u_view_matrix_loc, false, m4.gl_format(m_rot));
+    gl.uniformMatrix4fv(u_rot_matrix_loc, false, m4.gl_format(m_rot));
+    gl.uniformMatrix4fv(u_view_matrix_loc, false, m4.gl_format(m_view));
 }
 
 let time_ms;
