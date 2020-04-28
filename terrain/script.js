@@ -60,7 +60,7 @@ gl.bindTexture(gl.TEXTURE_2D, texture);
 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
               new Uint8Array([0, 0, 255, 255]));
 let image = new Image();
-image.src = 'texture.jpeg'
+image.src = 'texture.jpg'
 image.onload = function() {
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -69,7 +69,7 @@ image.onload = function() {
 
 function gh(x,y) {
     // get height at x,y
-    return 0.5 * perlin.get(x,y) + perlin.get(4*x, 4*y) / 10;
+    return 2 * perlin.get(x,y) + perlin.get(4*x, 4*y) / 5;
 }
 
 function calculate_normal(x,y) {
@@ -131,7 +131,7 @@ function gen_terrain_chunk(chunk_x, chunk_y) {
             normals.push(calculate_normal(x+d, y+d));
 
             // texture scale
-            let ts = 3;
+            let ts = 1;
             texpoints.push([ts * (xx/divs), ts * (yy/divs)]);
             texpoints.push([ts * (xx/divs+d), ts * (yy/divs)]);
             texpoints.push([ts * (xx/divs+d), ts * (yy/divs+d)]);
@@ -198,7 +198,7 @@ function perspective_mat(fov, aspect, near, far){
     ];
 }
 
-let fov = misc.deg_to_rad(50);
+let fov = misc.deg_to_rad(110);
 let near = 0.1; //closest z-coordinate to be rendered
 let far = 100; //furthest z-coordianted to be rendered
 let m_perspective;

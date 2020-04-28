@@ -29,6 +29,7 @@ void main(){
         normalize(-u_light),
         normalize((u_view_matrix * vec4(a_normal, 1)).xyz)
     );
+    if (intensity < 0.0) intensity = 0.0;
     texcoord = a_texcoord;
 }
 `;
@@ -42,7 +43,12 @@ varying vec2 texcoord;
 uniform sampler2D u_texture;
 
 void main(){
-    vec4 texcol = texture2D(u_texture, texcoord); //vec4(0.6, 0, 0, 1); 
-    gl_FragColor = (0.8 + 0.2 * intensity) * vec4(1.0*texcol.r, 0.5*texcol.g, 0.0*texcol.b, texcol.a);
+    vec4 texcol = texture2D(u_texture, texcoord); //vec4(0.6, 0, 0, 1);
+    // use this code if don't care about color of texture
+    //float texgreyscale = 0.333 * texcol.r + 0.333 * texcol.g + 0.333 * texcol.b;
+    //texgreyscale *= 4.0; // the greyscale wasn't maxing out at 1 so a rough //scale to get it there
+    //gl_FragColor.rgb = (0.4 + 0.6 * intensity) * texgreyscale * vec3(1.0, 0.7, 0.4);
+    gl_FragColor.rgb = (0.1 + 0.9 * intensity) * texcol.rgb;
+    gl_FragColor.a = 1.0;
 }
 `;
