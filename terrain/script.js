@@ -50,7 +50,7 @@ gl.vertexAttribPointer(a_normal_loc, 3, gl.FLOAT, false, 0, 0);
 
 function gh(x,y) {
     // get height at x,y
-    return perlin.get(x,y) + perlin.get(2*x, 2*y) / 2 + perlin.get(5*x, 5*y)/5;
+    return perlin.get(x,y); //+ perlin.get(2*x, 2*y) / 2 + perlin.get(5*x, 5*y)/5;
 }
 
 function calculate_normal(x,y) {
