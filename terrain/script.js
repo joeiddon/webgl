@@ -36,9 +36,11 @@ let a_normal_loc = gl.getAttribLocation(program, 'a_normal');
 let u_world_matrix_loc = gl.getUniformLocation(program, 'u_world_matrix');
 let u_view_matrix_loc = gl.getUniformLocation(program, 'u_view_matrix');
 let u_light_loc = gl.getUniformLocation(program, 'u_light');
+let a_texcoord_loc = gl.getAttribLocation(program, 'a_texcoord');
 
 gl.enableVertexAttribArray(a_position_loc);
 gl.enableVertexAttribArray(a_normal_loc);
+gl.enableVertexAttribArray(a_texcoord_loc);
 
 let positions_buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positions_buffer);
@@ -47,6 +49,23 @@ gl.vertexAttribPointer(a_position_loc, 3, gl.FLOAT, false, 0, 0);
 let normals_buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, normals_buffer);
 gl.vertexAttribPointer(a_normal_loc, 3, gl.FLOAT, false, 0, 0);
+
+let texcoords_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, texcoords_buffer);
+gl.vertexAttribPointer(a_texcoord_loc, 2, gl.FLOAT, false, 0, 0);
+
+let texture = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, texture);
+// fill with a blue pixel whilst wait for image to load
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+              new Uint8Array([0, 0, 255, 255]));
+let image = new Image();
+image.src = 'texture.jpeg'
+image.onload = function() {
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+  gl.generateMipmap(gl.TEXTURE_2D);
+};
 
 function gh(x,y) {
     // get height at x,y
@@ -72,6 +91,7 @@ function gen_terrain_chunk(chunk_x, chunk_y) {
         return chunk_memory[[chunk_x, chunk_y]];
     let points = [];
     let normals = [];
+    let texpoints = [];
 
     let divs = 10;
     // d is interval / step
@@ -109,9 +129,16 @@ function gen_terrain_chunk(chunk_x, chunk_y) {
             normals.push(calculate_normal(x, y));
             normals.push(calculate_normal(x, y+d));
             normals.push(calculate_normal(x+d, y+d));
+
+            texpoints.push([xx/divs, yy/divs]);
+            texpoints.push([xx/divs+d, yy/divs]);
+            texpoints.push([xx/divs+d, yy/divs+d]);
+            texpoints.push([xx/divs, yy/divs]);
+            texpoints.push([xx/divs, yy/divs+d]);
+            texpoints.push([xx/divs+d, yy/divs+d]);
         }
     }
-    let chunk = {'points': points, 'normals': normals};
+    let chunk = {'points': points, 'normals': normals, 'texpoints': texpoints};
     chunk_memory[[chunk_x, chunk_y]] = chunk;
     return chunk;
 }
@@ -120,6 +147,7 @@ function gen_terrain_chunk(chunk_x, chunk_y) {
 function populate_buffers() {
     let positions = [];
     let normals = [];
+    let texcoords = [];
 
     // generate each chunk and translate to correct position
     for (let x = -4; x < 4; x ++){
@@ -127,6 +155,7 @@ function populate_buffers() {
             let chunk = gen_terrain_chunk(x,y);
             positions.push(...chunk['points'].flat());
             normals.push(...chunk['normals'].flat());
+            texcoords.push(...chunk['texpoints'].flat());
         }
     }
 
@@ -135,6 +164,9 @@ function populate_buffers() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, normals_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, texcoords_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
 
     //return number of triangles
     if (positions.length != normals.length) console.error('normals and positions different lengths');
