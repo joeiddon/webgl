@@ -69,7 +69,7 @@ image.onload = function() {
 
 function gh(x,y) {
     // get height at x,y
-    return perlin.get(x,y) + perlin.get(4*x, 4*y) / 10;
+    return 0.5 * perlin.get(x,y) + perlin.get(4*x, 4*y) / 10;
 }
 
 function calculate_normal(x,y) {
@@ -93,7 +93,7 @@ function gen_terrain_chunk(chunk_x, chunk_y) {
     let normals = [];
     let texpoints = [];
 
-    let divs = 2;
+    let divs = 5;
     // d is interval / step
     let d = 1 / divs;
     for (let xx = 0; xx < divs; xx++){
@@ -130,12 +130,20 @@ function gen_terrain_chunk(chunk_x, chunk_y) {
             normals.push(calculate_normal(x, y+d));
             normals.push(calculate_normal(x+d, y+d));
 
-            texpoints.push([xx/divs, yy/divs]);
-            texpoints.push([xx/divs+d, yy/divs]);
-            texpoints.push([xx/divs+d, yy/divs+d]);
-            texpoints.push([xx/divs, yy/divs]);
-            texpoints.push([xx/divs, yy/divs+d]);
-            texpoints.push([xx/divs+d, yy/divs+d]);
+            // texture scale
+            let ts = 3;
+            texpoints.push([ts * (xx/divs), ts * (yy/divs)]);
+            texpoints.push([ts * (xx/divs+d), ts * (yy/divs)]);
+            texpoints.push([ts * (xx/divs+d), ts * (yy/divs+d)]);
+            texpoints.push([ts * (xx/divs), ts * (yy/divs)]);
+            texpoints.push([ts * (xx/divs), ts * (yy/divs+d)]);
+            texpoints.push([ts * (xx/divs+d), ts * (yy/divs+d)]);
+            //texpoints.push([0,0]);
+            //texpoints.push([0.5,0]);
+            //texpoints.push([0.5,0.5]);
+            //texpoints.push([0,0]);
+            //texpoints.push([0,0.5]);
+            //texpoints.push([0.5,0.5]);
         }
     }
     let chunk = {'points': points, 'normals': normals, 'texpoints': texpoints};
@@ -150,8 +158,8 @@ function populate_buffers() {
     let texcoords = [];
 
     // generate each chunk and translate to correct position
-    for (let x = -10; x < 10; x ++){
-        for (let y = -10; y < 10; y ++){
+    for (let x = -4; x < 4; x ++){
+        for (let y = -4; y < 4; y ++){
             let chunk = gen_terrain_chunk(x,y);
             positions.push(...chunk['points'].flat());
             normals.push(...chunk['normals'].flat());
