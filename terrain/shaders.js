@@ -42,7 +42,7 @@ varying vec2 texcoord;
 uniform sampler2D u_texture;
 
 void main(){
-    vec4 texcol = texture2D(u_texture, texcoord);
-    gl_FragColor = (0.8 + 0.2 * intensity) * vec4(1.0*texcol[0], 0.5*texcol[1], 0.0*texcol[2], texcol[3]);
+    vec4 texcol = texture2D(u_texture, texcoord); //vec4(0.6, 0, 0, 1); 
+    gl_FragColor = (0.8 + 0.2 * intensity) * vec4(1.0*texcol.r, 0.5*texcol.g, 0.0*texcol.b, texcol.a);
 }
 `;

@@ -93,7 +93,7 @@ function gen_terrain_chunk(chunk_x, chunk_y) {
     let normals = [];
     let texpoints = [];
 
-    let divs = 10;
+    let divs = 2;
     // d is interval / step
     let d = 1 / divs;
     for (let xx = 0; xx < divs; xx++){
@@ -150,8 +150,8 @@ function populate_buffers() {
     let texcoords = [];
 
     // generate each chunk and translate to correct position
-    for (let x = -4; x < 4; x ++){
-        for (let y = -5; y < 5; y ++){
+    for (let x = -10; x < 10; x ++){
+        for (let y = -10; y < 10; y ++){
             let chunk = gen_terrain_chunk(x,y);
             positions.push(...chunk['points'].flat());
             normals.push(...chunk['normals'].flat());
