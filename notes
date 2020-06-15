@@ -1,0 +1,6 @@
+The error:
+    vertexAttribPointer: index out of range
+can occur when the location cannot be found (set to -1). Sometimes the location
+cannot be found because the variable is not being used in the shader so is
+forgotten when the shader is compiled.
+

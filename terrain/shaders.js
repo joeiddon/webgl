@@ -58,8 +58,8 @@ void main(){
     vec3 fog_color = vec3(0.8, 0.8, 0.8); //this should match clear color
     float fog_intensity = 0.0;
     // these should be uniforms!
-    float fog_near = 2.0;
-    float fog_far = 4.0;
+    float fog_near = 9.0;
+    float fog_far = 12.0;
     if (camdist > fog_far) {
         fog_intensity = 1.0;
     } else if (camdist < fog_near) {

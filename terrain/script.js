@@ -199,8 +199,8 @@ function perspective_mat(fov, aspect, near, far){
     ];
 }
 
-let fov = misc.deg_to_rad(110);
-let near = 0.1; //closest z-coordinate to be rendered
+let fov = misc.deg_to_rad(70);
+let near = 0.001; //closest z-coordinate to be rendered
 let far = 100; //furthest z-coordianted to be rendered
 let m_perspective;
 

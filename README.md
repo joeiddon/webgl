@@ -14,6 +14,14 @@ If running locally, remember to whip up a server with something like `python -m 
 
 ---
 
+**Warning**: there is a typo in a lot of the `helpers.js` files inside the
+`.apply` method of the `m4` object (for applying a 4x4 matrix to a vertex),
+since this file is annoyingly copied all throughout this code (and other code
+including https://joeiddon.github.io/fields), I cannot be bothered to update
+the typo everywhere considering that method is almost never used.
+
+---
+
 ```
 .
 ├── 2d
