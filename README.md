@@ -22,6 +22,27 @@ the typo everywhere considering that method is almost never used.
 
 ---
 
+Note that the `perspective_mat` function that generates the perspective matrix
+based off the field of view, amongst other parameters, is defined with the
+field of view being in the vertical directon. If you are more used to field of
+view being defined in terms of the horizontal direction, instead use the
+following function:
+
+```javascript
+function perspective_mat(fov, aspect, near, far){
+    return [
+        [ 1/Math.tan(fov/2),                      0,                     0,                     0],
+        [                 0, aspect/Math.tan(fov/2),                     0,                     0],
+        [                 0,                      0, (far+near)/(far-near), 2*near*far/(near-far)],
+        [                 0,                      0,                     1,                     0]
+    ];
+}
+```
+
+---
+
+### Directory structure
+
 ```
 .
 ├── 2d
